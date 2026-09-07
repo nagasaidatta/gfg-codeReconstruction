@@ -1,0 +1,2 @@
+export type Attempt = { id:string; roll_number:string; student_name:string; started_at:string; submitted_at:string|null; elapsed_seconds:number|null; correct_lines:number|null; total_lines:number; status:string; submission_type:string; code_title?:string; assigned_lines: {id:string; line_text:string; display_position:number}[] }
+export type ResultRow = { id:string; roll_number:string; student_name:string; elapsed_seconds:number; correct_lines:number; total_lines:number; status:string; submission_type:string; code_title:string }

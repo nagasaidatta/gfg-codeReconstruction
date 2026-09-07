@@ -1,0 +1,9 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { normalizeRoll, supabase } from '../lib/supabase'
+
+export default function Student() {
+ const nav=useNavigate(), [roll,setRoll]=useState(''), [name,setName]=useState(''), [auth,setAuth]=useState(''), [error,setError]=useState(''), [busy,setBusy]=useState(false)
+ const start=async(e:React.FormEvent)=>{e.preventDefault(); setError(''); const normalized=normalizeRoll(roll); if(!normalized||!name.trim()||!/^\d{4}$/.test(auth)){setError(auth && !/^\d{4}$/.test(auth)?'Enter a valid authentication code.':'Complete all fields.'); return}; setBusy(true); const {data,error}=await supabase.rpc('start_exam',{p_roll_number:normalized,p_student_name:name.trim(),p_auth_code:auth}); setBusy(false); if(error){setError(error.message.includes('AUTH')?'Enter a valid authentication code.':error.message.includes('TAKEN')?'Exam already taken.':'Unable to start the exam. Try again.');return} nav(`/exam/${data}`)}
+ return <main className="center"><section className="card start-card"><span className="eyebrow">CODING CONTEST</span><h1>Code Reconstruction</h1><p className="muted">Arrange the code lines in the correct order.</p><form onSubmit={start}><label>Roll Number<input value={roll} onChange={e=>setRoll(normalizeRoll(e.target.value))} autoCapitalize="characters" required placeholder="24A81A05D3"/></label><label>Name<input value={name} onChange={e=>setName(e.target.value)} required maxLength={120}/></label><label>Authentication Code<input value={auth} onChange={e=>setAuth(e.target.value.replace(/\D/g,'').slice(0,4))} inputMode="numeric" required placeholder="0000"/></label>{error&&<p className="error">{error}</p>}<button disabled={busy}>{busy?'Starting…':'Start Exam'}</button></form><a className="admin-link" href="/admin/login">Admin</a></section></main>
+}
